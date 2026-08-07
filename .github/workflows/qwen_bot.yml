@@ -1,0 +1,29 @@
+name: Qwen GitHub Assistant
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  qwen-reply:
+    if: contains(github.event.comment.body, '/action') || contains(github.event.comment.body, '/approve')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Ollama & Run Qwen
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          
+          # Extract comment body
+          COMMENT_BODY="${{ github.event.comment.body }}"
+          
+          # Prompt local Qwen runner
+          ollama run qwen2.5:1.5b "You are a coding assistant. Resolve this GitHub request: $COMMENT_BODY" > reply.txt
+
+      - name: Post Response Back to GitHub
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.html_url }} --body-file reply.txt
