@@ -1,0 +1,83 @@
+nohup: ignoring input
+2026-08-07 02:42:27,479 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-08-07 02:42:27,479 - INFO - Synal Telegram HITL Daemon listening...
+2026-08-07 02:42:28,325 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getMe "HTTP/1.1 200 OK"
+2026-08-07 02:42:28,603 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/deleteWebhook "HTTP/1.1 200 OK"
+2026-08-07 02:42:28,605 - INFO - Added job "poll_pending_chunks" to job store "default"
+2026-08-07 02:42:28,605 - INFO - Scheduler started
+2026-08-07 02:42:28,605 - INFO - Application started
+2026-08-07 02:42:38,485 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:42:48 UTC)" (scheduled at 2026-08-07 02:42:38.478754+00:00)
+2026-08-07 02:42:38,767 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:42:38,768 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:42:38,768 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:42:48 UTC)" executed successfully
+2026-08-07 02:42:39,442 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:42:48,482 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:42:58 UTC)" (scheduled at 2026-08-07 02:42:48.478754+00:00)
+2026-08-07 02:42:48,761 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:42:48,762 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:42:48,762 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:42:58 UTC)" executed successfully
+2026-08-07 02:42:49,722 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:42:58,488 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:08 UTC)" (scheduled at 2026-08-07 02:42:58.478754+00:00)
+2026-08-07 02:42:59,152 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:42:59,153 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:42:59,153 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:08 UTC)" executed successfully
+2026-08-07 02:43:00,008 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:43:08,487 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:18 UTC)" (scheduled at 2026-08-07 02:43:08.478754+00:00)
+2026-08-07 02:43:08,764 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:43:08,764 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:43:08,765 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:18 UTC)" executed successfully
+2026-08-07 02:43:10,307 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:43:18,487 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:28 UTC)" (scheduled at 2026-08-07 02:43:18.478754+00:00)
+2026-08-07 02:43:18,777 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:43:18,777 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:43:18,777 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:28 UTC)" executed successfully
+2026-08-07 02:43:20,590 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:43:28,487 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:38 UTC)" (scheduled at 2026-08-07 02:43:28.478754+00:00)
+2026-08-07 02:43:28,770 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:43:28,770 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:43:28,771 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:38 UTC)" executed successfully
+2026-08-07 02:43:30,872 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:43:38,487 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:48 UTC)" (scheduled at 2026-08-07 02:43:38.478754+00:00)
+2026-08-07 02:43:38,775 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:43:38,775 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:43:38,775 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:48 UTC)" executed successfully
+2026-08-07 02:43:41,155 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:43:48,487 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:58 UTC)" (scheduled at 2026-08-07 02:43:48.478754+00:00)
+2026-08-07 02:43:48,769 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:43:48,769 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:43:48,769 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:43:58 UTC)" executed successfully
+2026-08-07 02:43:51,434 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:43:58,486 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:08 UTC)" (scheduled at 2026-08-07 02:43:58.478754+00:00)
+2026-08-07 02:43:58,790 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:43:58,790 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:43:58,790 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:08 UTC)" executed successfully
+2026-08-07 02:44:01,724 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:44:08,485 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:18 UTC)" (scheduled at 2026-08-07 02:44:08.478754+00:00)
+2026-08-07 02:44:08,764 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:44:08,765 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:44:08,765 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:18 UTC)" executed successfully
+2026-08-07 02:44:12,028 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:44:18,485 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:28 UTC)" (scheduled at 2026-08-07 02:44:18.478754+00:00)
+2026-08-07 02:44:18,766 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:44:18,766 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:44:18,766 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:28 UTC)" executed successfully
+2026-08-07 02:44:22,313 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:44:28,485 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:38 UTC)" (scheduled at 2026-08-07 02:44:28.478754+00:00)
+2026-08-07 02:44:28,769 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:44:28,770 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:44:28,770 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:38 UTC)" executed successfully
+2026-08-07 02:44:32,595 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:44:38,483 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:48 UTC)" (scheduled at 2026-08-07 02:44:38.478754+00:00)
+2026-08-07 02:44:38,766 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:44:38,767 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:44:38,767 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:48 UTC)" executed successfully
+2026-08-07 02:44:42,878 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:44:48,485 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:58 UTC)" (scheduled at 2026-08-07 02:44:48.478754+00:00)
+2026-08-07 02:44:48,769 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:44:48,769 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:44:48,770 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:44:58 UTC)" executed successfully
+2026-08-07 02:44:53,161 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"
+2026-08-07 02:44:58,484 - INFO - Running job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:45:08 UTC)" (scheduled at 2026-08-07 02:44:58.478754+00:00)
+2026-08-07 02:44:58,768 - INFO - HTTP Request: GET https://jjsycelagfmuquvxryfo.supabase.co/rest/v1/chunks?select=%2A&status=eq.PENDING_HUMAN_APPROVAL "HTTP/2 404 Not Found"
+2026-08-07 02:44:58,769 - ERROR - Error checking pending chunks: {'message': "Could not find the table 'public.chunks' in the schema cache", 'code': 'PGRST205', 'hint': None, 'details': None}
+2026-08-07 02:44:58,769 - INFO - Job "poll_pending_chunks (trigger: interval[0:00:10], next run at: 2026-08-07 02:45:08 UTC)" executed successfully
+2026-08-07 02:45:03,441 - INFO - HTTP Request: POST https://api.telegram.org/bot8877604591:AAHeBDdObBr9UBV8P99SIBNfThY69G9n4Us/getUpdates "HTTP/1.1 200 OK"

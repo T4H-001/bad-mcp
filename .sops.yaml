@@ -1,0 +1,5 @@
+creation_rules:
+  - path_regex: \.env$|\.secrets\.yaml$
+    key_groups:
+      - age:
+          - "age1placeholder_insert_your_age_public_key_here"
