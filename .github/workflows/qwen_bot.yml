@@ -4,6 +4,10 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  issues: write
+  contents: read
+
 jobs:
   qwen-reply:
     if: contains(github.event.comment.body, '/action') || contains(github.event.comment.body, '/approve')
