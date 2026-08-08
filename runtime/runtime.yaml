@@ -1,0 +1,15 @@
+runtime:
+  contract: t4h-repo-runtime
+  version: 1
+  source: TML-4PM/runtime-real
+  managed: true
+repository:
+  name: "TML-4PM/bad-mcp"
+  capabilities:
+    - build
+    - test
+    - release
+worker:
+  mode: event
+  fallback: sweep
+  receipt_required: true
