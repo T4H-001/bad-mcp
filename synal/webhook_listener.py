@@ -18,6 +18,7 @@ app = FastAPI()
 STATE_DB = Path(os.environ.get("T4H_STATE_DB", str(Path.home() / ".local/state/synal/work.db")))
 LEASE_SECONDS = int(os.environ.get("T4H_LEASE_SECONDS", "300"))
 MAX_ATTEMPTS = int(os.environ.get("T4H_MAX_ATTEMPTS", "3"))
+RETRY_DELAY_SECONDS = int(os.environ.get("T4H_RETRY_DELAY_SECONDS", "2"))
 OLLAMA_MODEL = os.environ.get("T4H_OLLAMA_MODEL", "qwen2.5:1.5b")
 REQUIRE_GITHUB_HMAC = os.environ.get("REQUIRE_GITHUB_HMAC", "0") == "1"
 
@@ -132,6 +133,29 @@ def claim_work(work_key: str, delivery_id: str, issue_url: str, worker: str) -> 
     return "CLAIMED"
 
 
+def current_attempt(work_key: str) -> int:
+    with sqlite3.connect(STATE_DB) as db:
+        row = db.execute("SELECT attempt FROM work_claims WHERE work_key=?", (work_key,)).fetchone()
+        return int(row[0]) if row else 1
+
+
+def reclaim_for_retry(work_key: str) -> int:
+    now = int(time.time())
+    with sqlite3.connect(STATE_DB) as db:
+        db.execute("BEGIN IMMEDIATE")
+        row = db.execute("SELECT attempt FROM work_claims WHERE work_key=?", (work_key,)).fetchone()
+        if not row:
+            raise RuntimeError("Cannot reclaim missing work item")
+        next_attempt = int(row[0]) + 1
+        db.execute(
+            "UPDATE work_claims SET state='CLAIMED', attempt=?, lease_until=?, updated_at=? WHERE work_key=?",
+            (next_attempt, now + LEASE_SECONDS, utc_now(), work_key),
+        )
+        db.commit()
+    record_event(work_key, "RECOVERY_CLAIMED", f"attempt={next_attempt}; worker=WKR-RECOVER-001")
+    return next_attempt
+
+
 def gh_env() -> dict:
     env = os.environ.copy()
     if "GITHUB_PAT" in env and "GH_TOKEN" not in env:
@@ -207,14 +231,12 @@ def complete_work(work_key: str, issue_url: str, worker: str, output: str) -> No
     record_event(work_key, "COMPLETED", f"receipt_comment_id={comment_id}")
 
 
-def fail_work(work_key: str, issue_url: str, worker: str, error: Exception) -> None:
+def fail_work(work_key: str, issue_url: str, worker: str, error: Exception) -> bool:
     error_text = str(error)[:3000]
+    attempt = current_attempt(work_key)
+    terminal = attempt >= MAX_ATTEMPTS
+    state = "BLOCKED" if terminal else "RETRY_READY"
     with sqlite3.connect(STATE_DB) as db:
-        db.row_factory = sqlite3.Row
-        row = db.execute("SELECT attempt FROM work_claims WHERE work_key=?", (work_key,)).fetchone()
-        attempt = int(row["attempt"] if row else 1)
-        terminal = attempt >= MAX_ATTEMPTS
-        state = "BLOCKED" if terminal else "RETRY_READY"
         db.execute(
             "UPDATE work_claims SET state=?, lease_until=NULL, last_error=?, updated_at=? WHERE work_key=?",
             (state, error_text, utc_now(), work_key),
@@ -222,7 +244,7 @@ def fail_work(work_key: str, issue_url: str, worker: str, error: Exception) -> N
         db.commit()
     record_event(work_key, state, error_text)
 
-    recovery_state = "BLOCKED_AFTER_MAX_ATTEMPTS" if terminal else "ROUTE_WKR-RECOVER-001"
+    recovery_state = "BLOCKED_AFTER_MAX_ATTEMPTS" if terminal else "WKR-RECOVER-001_AUTO_RETRY"
     try:
         github_receipt(
             issue_url,
@@ -232,18 +254,30 @@ def fail_work(work_key: str, issue_url: str, worker: str, error: Exception) -> N
         )
     except Exception as receipt_error:
         record_event(work_key, "RECEIPT_WRITE_FAILED", str(receipt_error))
+    return terminal
 
 
 def execute_work(work_key: str, issue_url: str, comment_body: str, worker: str) -> None:
-    try:
-        record_event(work_key, "EXECUTE_START", f"model={OLLAMA_MODEL}")
-        output = run_qwen(comment_body)
-        record_event(work_key, "VALIDATED", "non-empty Qwen result")
-        complete_work(work_key, issue_url, worker, output)
-        print(f"[T4H WORKER] COMPLETE {work_key} -> SLEEP", flush=True)
-    except Exception as exc:
-        fail_work(work_key, issue_url, worker, exc)
-        print(f"[T4H WORKER] FAILED {work_key}: {exc}", flush=True)
+    while True:
+        attempt = current_attempt(work_key)
+        try:
+            record_event(work_key, "EXECUTE_START", f"model={OLLAMA_MODEL}; attempt={attempt}")
+            if "test_class: LIVE_FORCED_FAILURE" in comment_body and attempt == 1:
+                raise RuntimeError("CONTROLLED_TEST_FAILURE:first_attempt")
+            output = run_qwen(comment_body)
+            record_event(work_key, "VALIDATED", f"non-empty Qwen result; attempt={attempt}")
+            complete_work(work_key, issue_url, worker, output)
+            print(f"[T4H WORKER] COMPLETE {work_key} attempt={attempt} -> SLEEP", flush=True)
+            return
+        except Exception as exc:
+            terminal = fail_work(work_key, issue_url, worker, exc)
+            print(f"[T4H WORKER] FAILED {work_key} attempt={attempt}: {exc}", flush=True)
+            if terminal:
+                return
+            record_event(work_key, "ROUTED_RECOVERY", "WKR-RECOVER-001")
+            time.sleep(RETRY_DELAY_SECONDS)
+            next_attempt = reclaim_for_retry(work_key)
+            print(f"[T4H WORKER] WKR-RECOVER-001 AUTO-RETRY {work_key} attempt={next_attempt}", flush=True)
 
 
 @app.on_event("startup")
@@ -274,6 +308,14 @@ async def handle_github_webhook(request: Request, background_tasks: BackgroundTa
 
     if claim == "DEDUPED":
         record_event(work_key, "DEDUPED", delivery_id)
+        try:
+            github_receipt(
+                issue_url,
+                f"<!-- t4h-receipt -->\nwork_key: {work_key}\nworker: {worker}\nstate: DEDUPED\n"
+                f"validation: PASS\nexecution: SKIPPED\nnext_state: SLEEP",
+            )
+        except Exception as exc:
+            record_event(work_key, "DEDUPE_RECEIPT_FAILED", str(exc))
         return {"status": "deduped", "work_key": work_key, "state": "SLEEP"}
     if claim == "LEASED":
         return {"status": "already_claimed", "work_key": work_key, "state": "CLAIMED"}
