@@ -1,0 +1,17 @@
+name: T4H Runtime
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened, labeled]
+  repository_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  runtime:
+    uses: TML-4PM/runtime-real/.github/workflows/repo-runtime.yml@main
+    secrets: inherit
