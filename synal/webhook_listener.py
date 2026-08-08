@@ -1,1 +1,1 @@
-from synal.runtime_v2 import app
+from synal.runtime_v3 import app
