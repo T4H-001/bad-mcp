@@ -24,12 +24,11 @@ mkdir -p "$HOME/.config/synal" && chmod 700 "$HOME/.config/synal"
 printf 'export GITHUB_WEBHOOK_SECRET=%q\nexport REQUIRE_GITHUB_HMAC=1\nexport T4H_OLLAMA_MODEL=%q\n' "$SECRET" "$T4H_OLLAMA_MODEL" > "$HOME/.config/synal/runtime.env"
 chmod 600 "$HOME/.config/synal/runtime.env"
 
-python3 -c 'import json,os; p="/tmp/t4h-hook.json"; json.dump({"name":"web","active":True,"events":["issue_comment"],"config":{"url":os.environ["HOOK_URL"],"content_type":"json","insecure_ssl":"0","secret":os.environ["GITHUB_WEBHOOK_SECRET"]}},open(p,"w"))' HOOK_URL="$HOOK_URL" 2>/dev/null || true
 export HOOK_URL
 python3 -c 'import json,os; json.dump({"name":"web","active":True,"events":["issue_comment"],"config":{"url":os.environ["HOOK_URL"],"content_type":"json","insecure_ssl":"0","secret":os.environ["GITHUB_WEBHOOK_SECRET"]}},open("/tmp/t4h-hook.json","w"))'
 chmod 600 /tmp/t4h-hook.json
 gh api -X PATCH repos/TML-4PM/synal-core/hooks/$HOOK_ID --input /tmp/t4h-hook.json >/dev/null
-CP_HOOK=$(gh api repos/TML-4PM/t4h-engineering-control-plane/hooks --jq --arg u "$HOOK_URL" '[.[]|select(.config.url==$u)][0].id // empty')
+CP_HOOK=$(gh api repos/TML-4PM/t4h-engineering-control-plane/hooks | HOOK_URL="$HOOK_URL" python3 -c 'import json,os,sys; u=os.environ["HOOK_URL"]; xs=json.load(sys.stdin); print(next((str(x["id"]) for x in xs if (x.get("config") or {}).get("url")==u),""))')
 if [ -n "$CP_HOOK" ]; then gh api -X PATCH repos/TML-4PM/t4h-engineering-control-plane/hooks/$CP_HOOK --input /tmp/t4h-hook.json >/dev/null; else CP_HOOK=$(gh api -X POST repos/TML-4PM/t4h-engineering-control-plane/hooks --input /tmp/t4h-hook.json --jq '.id'); fi
 rm -f /tmp/t4h-hook.json
 
