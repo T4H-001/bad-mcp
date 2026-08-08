@@ -15,6 +15,7 @@ from pathlib import Path
 STATE = Path.home() / ".local/state/synal/sentry-sweep.db"
 CONTROL_REPO = "TML-4PM/t4h-engineering-control-plane"
 SENTRY_ISSUE = 37
+MAX_NEW_ROUTES = 25
 QUERIES = [
     'org:TML-4PM is:issue is:open "missing receipt"',
     'org:TML-4PM is:issue is:open "expected receipt"',
@@ -62,7 +63,7 @@ def candidates():
                 "updatedAt": item.get("updated_at", ""),
                 "number": item.get("number"),
             }
-    return list(found.values())
+    return sorted(found.values(), key=lambda x: x.get("updatedAt", ""), reverse=True)
 
 
 def route(item):
@@ -99,13 +100,26 @@ def main():
     init()
     scanned = candidates()
     routed = 0
+    skipped_existing = 0
     errors = []
     for item in scanned:
+        if routed >= MAX_NEW_ROUTES:
+            break
         try:
-            routed += int(route(item))
+            if route(item):
+                routed += 1
+            else:
+                skipped_existing += 1
         except Exception as exc:
             errors.append({"url": item.get("url"), "error": str(exc)[:300]})
-    result = {"state": "COMPLETE" if not errors else "PARTIAL", "candidates": len(scanned), "new_routes": routed, "errors": errors}
+    result = {
+        "state": "COMPLETE" if not errors else "PARTIAL",
+        "candidates_discovered": len(scanned),
+        "new_routes": routed,
+        "skipped_existing": skipped_existing,
+        "batch_limit": MAX_NEW_ROUTES,
+        "errors": errors,
+    }
     print(json.dumps(result, indent=2))
     if errors:
         raise SystemExit(2)
