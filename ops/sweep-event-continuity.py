@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+"""Recovery sweep for estate event-continuity gaps.
+
+Primary operation remains GitHub webhooks. This sweep is the recovery net for old/orphaned
+work or repositories that have not yet delivered an event. It only routes candidates; it
+does not mark domain work complete.
+"""
+import hashlib
+import json
+import sqlite3
+import subprocess
+import time
+from pathlib import Path
+
+STATE = Path.home() / ".local/state/synal/sentry-sweep.db"
+CONTROL_REPO = "TML-4PM/t4h-engineering-control-plane"
+SENTRY_ISSUE = 37
+QUERIES = [
+    'org:TML-4PM is:issue is:open "missing receipt"',
+    'org:TML-4PM is:issue is:open "expected receipt"',
+    'org:TML-4PM is:issue is:open "zero workflow runs"',
+    'org:TML-4PM is:issue is:open "no workflow runs"',
+    'org:TML-4PM is:issue is:open "runner unavailable"',
+    'org:TML-4PM is:issue is:open "billing" "Actions"',
+    'org:TML-4PM is:issue is:open "did not pick up"',
+    'org:TML-4PM is:issue is:open "did not wake"',
+    'org:TML-4PM is:issue is:open "no runtime receipt"',
+    'org:TML-4PM is:issue is:open "downstream proof chain"',
+]
+
+
+def gh(*args):
+    p = subprocess.run(["gh", *args], capture_output=True, text=True, timeout=60)
+    if p.returncode:
+        raise RuntimeError(p.stderr.strip() or "gh failed")
+    return p.stdout
+
+
+def init():
+    STATE.parent.mkdir(parents=True, exist_ok=True)
+    with sqlite3.connect(STATE) as db:
+        db.execute("""CREATE TABLE IF NOT EXISTS routed(
+          candidate_key TEXT PRIMARY KEY, source_url TEXT NOT NULL,
+          source_updated_at TEXT, routed_comment_id INTEGER, routed_at INTEGER NOT NULL)""")
+        db.commit()
+
+
+def candidates():
+    found = {}
+    for query in QUERIES:
+        raw = gh("search", "issues", query, "--limit", "100", "--json", "url,title,updatedAt,repository,number")
+        for item in json.loads(raw or "[]"):
+            url = item.get("url", "")
+            if not url or url.endswith(f"/{SENTRY_ISSUE}") and CONTROL_REPO in url:
+                continue
+            found[url] = item
+    return list(found.values())
+
+
+def route(item):
+    url = item["url"]
+    updated = item.get("updatedAt") or ""
+    key = hashlib.sha256(f"{url}|{updated}".encode()).hexdigest()[:20]
+    with sqlite3.connect(STATE) as db:
+        if db.execute("SELECT 1 FROM routed WHERE candidate_key=?", (key,)).fetchone():
+            return False
+    body = f"""/action estate event-continuity candidate discovered by recovery sweep
+<!-- t4h-event -->
+work_key: github:event-continuity-sweep:{key}
+target_worker: WKR-EVENT-SENTRY-001
+source_item: {url}
+requested_action: refresh source truth; determine whether expected event/wake/receipt chain is missing or stale; if continuity failure exists diagnose/repair or route WKR-RECOVER-001/domain owner; independently verify evidence; do not mark domain outcome complete from issue text alone
+test_class: ESTATE_CONTINUITY_CANDIDATE
+"""
+    created = json.loads(gh("api", f"repos/{CONTROL_REPO}/issues/{SENTRY_ISSUE}/comments", "-f", f"body={body}"))
+    cid = int(created["id"])
+    # Provider readback of the routing mutation.
+    rb = json.loads(gh("api", f"repos/{CONTROL_REPO}/issues/comments/{cid}"))
+    if int(rb.get("id", 0)) != cid:
+        raise RuntimeError("routing comment readback failed")
+    with sqlite3.connect(STATE) as db:
+        db.execute("INSERT INTO routed(candidate_key,source_url,source_updated_at,routed_comment_id,routed_at) VALUES(?,?,?,?,?)",
+                   (key, url, updated, cid, int(time.time())))
+        db.commit()
+    return True
+
+
+def main():
+    init()
+    scanned = candidates()
+    routed = 0
+    errors = []
+    for item in scanned:
+        try:
+            routed += int(route(item))
+        except Exception as exc:
+            errors.append({"url": item.get("url"), "error": str(exc)[:300]})
+    print(json.dumps({"state":"COMPLETE","candidates":len(scanned),"new_routes":routed,"errors":errors}, indent=2))
+    if errors:
+        raise SystemExit(2)
+
+
+if __name__ == "__main__":
+    main()
