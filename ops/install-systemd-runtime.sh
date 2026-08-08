@@ -7,9 +7,12 @@ git fetch origin main
 git checkout main
 git reset --hard origin/main
 
-ENVFILE=/home/ubuntu/.config/synal/runtime.env
-[ -f "$ENVFILE" ] || { echo 'runtime.env missing'; exit 31; }
-chmod 600 "$ENVFILE"
+SHELL_ENV=/home/ubuntu/.config/synal/runtime.env
+SYSTEMD_ENV=/home/ubuntu/.config/synal/systemd.env
+[ -f "$SHELL_ENV" ] || { echo 'runtime.env missing'; exit 31; }
+mkdir -p /home/ubuntu/.config/synal
+sed -E 's/^export[[:space:]]+//' "$SHELL_ENV" > "$SYSTEMD_ENV"
+chmod 600 "$SHELL_ENV" "$SYSTEMD_ENV"
 
 cat > /tmp/t4h-synal-event.service <<'EOF'
 [Unit]
@@ -24,7 +27,7 @@ Group=ubuntu
 WorkingDirectory=/home/ubuntu/my-project
 Environment=HOME=/home/ubuntu
 Environment=PATH=/home/ubuntu/my-project/venv/bin:/usr/local/bin:/usr/bin:/bin
-EnvironmentFile=/home/ubuntu/.config/synal/runtime.env
+EnvironmentFile=/home/ubuntu/.config/synal/systemd.env
 ExecStart=/home/ubuntu/my-project/venv/bin/uvicorn synal.webhook_listener:app --host 0.0.0.0 --port 8000
 Restart=always
 RestartSec=3
@@ -42,4 +45,4 @@ sudo systemctl enable t4h-synal-event.service >/dev/null
 sudo systemctl restart t4h-synal-event.service
 sleep 4
 sudo systemctl is-active --quiet t4h-synal-event.service
-curl -fsS http://127.0.0.1:8000/health
+curl -fsS http://127.0.0.1:8000/health | python3 -c 'import json,sys; x=json.load(sys.stdin); assert x["status"]=="ok" and x["hmac_required"] and x["hmac_configured"]; print("SYSTEMD_RUNTIME_OK")'
