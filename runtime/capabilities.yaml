@@ -1,0 +1,10 @@
+schema: t4h-runtime-capabilities/v1
+managed: true
+capabilities:
+  build: true
+  test: true
+  release: true
+  deploy: false
+  operate: false
+notes:
+  - Override capability values only when the repository has evidence for them.
