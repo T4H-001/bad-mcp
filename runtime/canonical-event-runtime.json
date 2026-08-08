@@ -1,0 +1,16 @@
+{
+  "runtime_id": "synal-ec2-standard-v2",
+  "role": ["MICRO_INGRESS", "STANDARD_EXECUTOR"],
+  "canonical_for": ["WKR-EVENT-001", "WKR-RECOVER-001", "WKR-PLUGIN-001 proving slice"],
+  "source_repo": "TML-4PM/synal-core",
+  "entrypoint": "uvicorn synal.webhook_listener:app --host 0.0.0.0 --port 8000",
+  "state_store": "~/.local/state/synal/work.db",
+  "auth": "GitHub HMAC-SHA256 required",
+  "dedupe": "work_claims.work_key",
+  "ledger": "work_ledger",
+  "telemetry": "telemetry",
+  "recovery_worker": "WKR-RECOVER-001",
+  "github_hosted_compute_required": false,
+  "evidence_surface": "GitHub issue receipts + SQLite ledger/telemetry",
+  "supersedes_runtime_narrative": "PR #25 remains reference implementation; live canonical provider attachment is Synal EC2 runtime"
+}
