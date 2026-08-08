@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Recovery sweep for estate event-continuity gaps.
 
-Primary operation remains GitHub webhooks. This sweep is the recovery net for old/orphaned
-work or repositories that have not yet delivered an event. It only routes candidates; it
-does not mark domain work complete.
+Webhooks remain primary. This low-frequency persistent sweep is the recovery net for old/orphaned
+work or repositories that did not deliver a usable event. It routes candidates only; it never marks
+the underlying domain outcome complete.
 """
 import hashlib
 import json
@@ -21,7 +21,7 @@ QUERIES = [
     'org:TML-4PM is:issue is:open "zero workflow runs"',
     'org:TML-4PM is:issue is:open "no workflow runs"',
     'org:TML-4PM is:issue is:open "runner unavailable"',
-    'org:TML-4PM is:issue is:open "billing" "Actions"',
+    'org:TML-4PM is:issue is:open billing Actions',
     'org:TML-4PM is:issue is:open "did not pick up"',
     'org:TML-4PM is:issue is:open "did not wake"',
     'org:TML-4PM is:issue is:open "no runtime receipt"',
@@ -48,12 +48,20 @@ def init():
 def candidates():
     found = {}
     for query in QUERIES:
-        raw = gh("search", "issues", query, "--limit", "100", "--json", "url,title,updatedAt,repository,number")
-        for item in json.loads(raw or "[]"):
-            url = item.get("url", "")
-            if not url or url.endswith(f"/{SENTRY_ISSUE}") and CONTROL_REPO in url:
+        raw = gh("api", "-X", "GET", "search/issues", "-f", f"q={query}", "-f", "per_page=100")
+        payload = json.loads(raw or "{}")
+        for item in payload.get("items", []):
+            url = item.get("html_url", "")
+            if not url:
                 continue
-            found[url] = item
+            if url == f"https://github.com/{CONTROL_REPO}/issues/{SENTRY_ISSUE}":
+                continue
+            found[url] = {
+                "url": url,
+                "title": item.get("title", ""),
+                "updatedAt": item.get("updated_at", ""),
+                "number": item.get("number"),
+            }
     return list(found.values())
 
 
@@ -69,18 +77,20 @@ def route(item):
 work_key: github:event-continuity-sweep:{key}
 target_worker: WKR-EVENT-SENTRY-001
 source_item: {url}
+source_updated_at: {updated}
 requested_action: refresh source truth; determine whether expected event/wake/receipt chain is missing or stale; if continuity failure exists diagnose/repair or route WKR-RECOVER-001/domain owner; independently verify evidence; do not mark domain outcome complete from issue text alone
 test_class: ESTATE_CONTINUITY_CANDIDATE
 """
     created = json.loads(gh("api", f"repos/{CONTROL_REPO}/issues/{SENTRY_ISSUE}/comments", "-f", f"body={body}"))
     cid = int(created["id"])
-    # Provider readback of the routing mutation.
     rb = json.loads(gh("api", f"repos/{CONTROL_REPO}/issues/comments/{cid}"))
     if int(rb.get("id", 0)) != cid:
         raise RuntimeError("routing comment readback failed")
     with sqlite3.connect(STATE) as db:
-        db.execute("INSERT INTO routed(candidate_key,source_url,source_updated_at,routed_comment_id,routed_at) VALUES(?,?,?,?,?)",
-                   (key, url, updated, cid, int(time.time())))
+        db.execute(
+            "INSERT INTO routed(candidate_key,source_url,source_updated_at,routed_comment_id,routed_at) VALUES(?,?,?,?,?)",
+            (key, url, updated, cid, int(time.time())),
+        )
         db.commit()
     return True
 
@@ -95,7 +105,8 @@ def main():
             routed += int(route(item))
         except Exception as exc:
             errors.append({"url": item.get("url"), "error": str(exc)[:300]})
-    print(json.dumps({"state":"COMPLETE","candidates":len(scanned),"new_routes":routed,"errors":errors}, indent=2))
+    result = {"state": "COMPLETE" if not errors else "PARTIAL", "candidates": len(scanned), "new_routes": routed, "errors": errors}
+    print(json.dumps(result, indent=2))
     if errors:
         raise SystemExit(2)
 
