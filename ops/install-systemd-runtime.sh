@@ -48,7 +48,7 @@ Group=ubuntu
 WorkingDirectory=/home/ubuntu/my-project
 Environment=HOME=/home/ubuntu
 Environment=PATH=/home/ubuntu/my-project/venv/bin:/usr/local/bin:/usr/bin:/bin
-ExecStart=/usr/bin/python3 /home/ubuntu/my-project/ops/sweep-event-continuity.py
+ExecStart=/bin/bash /home/ubuntu/my-project/ops/run-sentry-sweep.sh
 NoNewPrivileges=true
 EOF
 
@@ -78,5 +78,7 @@ sudo systemctl is-active --quiet t4h-synal-event.service
 sudo systemctl is-active --quiet t4h-event-sentry-sweep.timer
 curl -fsS http://127.0.0.1:8000/health | python3 -c 'import json,sys; x=json.load(sys.stdin); assert x["status"]=="ok" and x["hmac_required"] and x["hmac_configured"] and x.get("event_sentry_persistent"); print("SYSTEMD_RUNTIME_AND_SENTRY_SWEEP_OK")'
 # Initial recovery pass proves the safety net now; timer owns later passes.
-sudo systemctl start t4h-event-sentry-sweep.service
-sudo systemctl is-failed --quiet t4h-event-sentry-sweep.service && exit 41 || true
+if ! sudo systemctl start t4h-event-sentry-sweep.service; then
+  sudo journalctl -u t4h-event-sentry-sweep.service -n 120 --no-pager
+  exit 41
+fi
