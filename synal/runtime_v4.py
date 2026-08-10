@@ -14,6 +14,7 @@ from synal import runtime_v3 as v3
 
 RUNTIME_ID = "synal-ec2-standard-v4"
 SWEEP_WORKER = "WKR-SWEEP-001"
+V3_RESOLVE_WORKER = v3.resolve_worker
 
 
 def _parse_max_items(body: str) -> int:
@@ -39,7 +40,7 @@ def resolve_worker(body: str) -> str:
     test_class = (v3.parse_field(body, "test_class") or "").upper()
     if test_class in {"LIVE_BOUNDED_SWEEP_PROOF", "LIVE_ESTATE_CONVERGENCE", "LIVE_SWEEP_PROOF"}:
         return SWEEP_WORKER
-    return v3.resolve_worker(body)
+    return V3_RESOLVE_WORKER(body)
 
 
 def _classify(item: dict) -> dict:
@@ -125,10 +126,10 @@ def bounded_sweep(work_key: str, source_url: str, body: str) -> dict:
 def execute(work_key: str, url: str, body: str, worker: str) -> None:
     while True:
         attempt = v3.attempt_for(work_key)
+        test_class = (v3.parse_field(body, "test_class") or "").upper()
         try:
             v3.event(work_key, "EXECUTE_START", f"attempt={attempt};worker={worker};runtime={RUNTIME_ID}")
             v3.ledger(work_key, worker, "EXECUTE_START", attempt, f"runtime={RUNTIME_ID}")
-            test_class = (v3.parse_field(body, "test_class") or "").upper()
 
             if test_class == "LIVE_FORCED_FAILURE" and attempt == 1:
                 raise RuntimeError("CONTROLLED_TEST_FAILURE:first_attempt")
