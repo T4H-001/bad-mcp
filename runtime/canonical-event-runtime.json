@@ -1,32 +1,16 @@
 {
   "runtime_id": "synal-ec2-standard-v4",
   "role": ["MICRO_INGRESS", "STANDARD_EXECUTOR", "ESTATE_EVENT_CONTINUITY_SENTINEL", "BOUNDED_OPERABILITY_AUDITOR_ROUTER"],
-  "canonical_for": [
-    "WKR-EVENT-SENTRY-001",
-    "WKR-SWEEP-001 bounded deterministic operability audit/routing",
-    "WKR-RECOVER-001 continuity handoff",
-    "event-path acceptance",
-    "missing receipt/readback detection",
-    "stalled or expired event claims",
-    "webhook/HMAC/configuration drift",
-    "event-driven work stranded by unavailable GitHub-hosted Actions"
-  ],
+  "canonical_for": ["WKR-EVENT-SENTRY-001", "WKR-SWEEP-001 bounded deterministic operability audit/routing", "WKR-RECOVER-001 continuity handoff"],
   "source_repo": "TML-4PM/synal-core",
   "entrypoint": "uvicorn synal.webhook_listener:app --host 0.0.0.0 --port 8000",
   "service": "t4h-synal-event.service",
-  "persistence": "systemd enabled; durable SQLite state survives worker/model/process context",
   "state_store": "~/.local/state/synal/work.db",
   "auth": "GitHub HMAC-SHA256 required",
   "dedupe": "work_claims.work_key",
   "ledger": "work_ledger",
   "telemetry": "telemetry",
   "proof_store": "proof_runs",
-  "process_proof": {
-    "required_event_chain": ["RECEIVED", "SIGNATURE_VERIFIED", "CLAIMED", "EXECUTE_START", "VALIDATED", "COMPLETED"],
-    "required_ledger_chain": ["CLAIMED", "EXECUTE_START", "VALIDATED", "SLEEP"],
-    "digest": "SHA-256 over durable claim/events/ledger/telemetry bundle",
-    "independent_readback_endpoint": "/runtime/proof/{work_key}"
-  },
   "sweep_v4": {
     "worker": "WKR-SWEEP-001",
     "mode": "DETERMINISTIC_BOUNDED_AUDIT",
@@ -40,9 +24,6 @@
     "completion_ownership_retained": false,
     "qualification": "two independent bounded cycles + real specialist handoff + duplicate replay suppression + separate durable proof verifier"
   },
-  "sentry_default_routing": "event-continuity symptoms route to WKR-EVENT-SENTRY-001 unless an explicit target_worker is supplied",
-  "recovery_worker": "WKR-RECOVER-001",
   "github_hosted_compute_required": false,
-  "evidence_surface": "GitHub receipt + durable transition proof bundle + proof digest + SQLite ledger/telemetry",
   "status_rule": "A COMPLETED comment alone is not REAL; transition proof and readback must verify"
 }
