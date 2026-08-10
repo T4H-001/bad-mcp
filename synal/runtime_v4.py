@@ -24,7 +24,7 @@ def _parse_max_items(body: str) -> int:
 
 def _gh_json(args: list[str]) -> Any:
     p = subprocess.run(
-        ["gh", "api", *args],
+        ["gh", "api", "-X", "GET", *args],
         env=v3.gh_env(), capture_output=True, text=True, timeout=45,
     )
     if p.returncode:
@@ -141,7 +141,6 @@ def execute(work_key: str, url: str, body: str, worker: str) -> None:
             elif worker == "WKR-PLUGIN-001" or test_class == "LIVE_PLUGIN_VERTICAL_SLICE":
                 result = v3.plugin_slice(work_key)
             else:
-                # Preserve legacy v3 behaviour for other workers until each gains a deterministic/specialist adapter.
                 result = {"qwen": v3.qwen("You are a bounded engineering worker. Do not request human approval except credentials/legal/safety/destructive/missing authority.\n\n" + body)}
 
             v3.complete(work_key, url, worker, result, attempt)
@@ -156,12 +155,10 @@ def execute(work_key: str, url: str, body: str, worker: str) -> None:
             import time
             time.sleep(v3.RETRY_DELAY_SECONDS)
             n = v3.reclaim(work_key)
-            # Recovery owns continuity but must preserve deterministic sweep execution semantics.
             worker = SWEEP_WORKER if test_class in {"LIVE_BOUNDED_SWEEP_PROOF", "LIVE_ESTATE_CONVERGENCE", "LIVE_SWEEP_PROOF"} else v3.RECOVERY_WORKER
             print(f"[T4H WORKER] recovery retry {work_key} attempt={n};effective_worker={worker}", flush=True)
 
 
-# Patch v3 globals used by its FastAPI route at runtime.
 v3.RUNTIME_ID = RUNTIME_ID
 v3.resolve_worker = resolve_worker
 v3.execute = execute
