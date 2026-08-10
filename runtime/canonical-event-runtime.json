@@ -37,7 +37,8 @@
     "handoff_dedupe": "source issue + target worker marker",
     "handoff_provider_readback_required": true,
     "continuous_scan_prohibited": true,
-    "completion_ownership_retained": false
+    "completion_ownership_retained": false,
+    "qualification": "two independent bounded cycles + real specialist handoff + duplicate replay suppression + separate durable proof verifier"
   },
   "sentry_default_routing": "event-continuity symptoms route to WKR-EVENT-SENTRY-001 unless an explicit target_worker is supplied",
   "recovery_worker": "WKR-RECOVER-001",
