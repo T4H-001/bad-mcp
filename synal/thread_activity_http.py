@@ -39,7 +39,13 @@ ALLOWED_SOURCES = {"chatgpt", "claude", "gemini", "grok", "perplexity", "other"}
 
 
 def _require_observer_key(request: Request) -> None:
-    expected = os.environ.get("T4H_THREAD_OBSERVER_API_KEY", "").strip()
+    # Prefer a dedicated observer key when configured, but reuse the existing governed
+    # Synal Snaps ingress credential to avoid creating and repeatedly provisioning a
+    # second browser-ingress secret for the same trusted extension/runtime boundary.
+    expected = (
+        os.environ.get("T4H_THREAD_OBSERVER_API_KEY", "").strip()
+        or os.environ.get("SNAPS_INGEST_API_KEY", "").strip()
+    )
     if not expected:
         raise HTTPException(503, "thread observer API key not configured")
     supplied = request.headers.get("x-api-key", "")
