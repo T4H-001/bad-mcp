@@ -1,0 +1,223 @@
+--- /home/ubuntu/.bash_history ---
+read -rsp "Canonical Supabase DB PASSWORD: " PGPASSWORD </dev/tty
+mkdir -p "$MIGRATION_DIR"
+  existing="$(find "$MIGRATION_DIR" -maxdepth 1 -type f -name "${version}_*.sql" -print -quit)"
+        from supabase_migrations.schema_migrations
+        from supabase_migrations.schema_migrations
+    echo "BLOCKED: remote migration $version was not found."
+    echo "BLOCKED: remote migration $version has no recoverable statements."
+  target="${MIGRATION_DIR}/${version}_${name}.sql"
+    printf '%s\n' '-- Recovered verbatim from supabase_migrations.schema_migrations'
+echo "Recovered migration inventory:"
+echo "NEXT_GATE=inspect recovered SQL and run migration dry-run"
+printf 'supabase='
+command -v supabase || true
+supabase --version 2>/dev/null || true
+drwxrwxr-x  3 ubuntu ubuntu  4096 Aug 10 18:42 supabase
+drwxrwxr-x  3 ubuntu ubuntu  4096 Aug 10 18:42 supabase
+DB_URL="postgresql://postgres.${PROJECT_REF}@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require"
+MIGRATION_DIR="supabase/migrations"
+BRANCH="repair/supabase-migration-history-reconciliation"
+  20260716230809
+  20260716230815
+  20260716230822
+  20260716231037
+  20260720155026
+  20260720160050
+  20260720160228
+  20260720160411
+  20260720170003
+  20260720171442
+  20260720171542
+  20260720171602
+  20260720171630
+  20260720171725
+  20260720173943
+  20260720203554
+  echo "Commit or stash existing work before migration recovery."
+read -rsp "Canonical Supabase DB PASSWORD: " PGPASSWORD </dev/tty
+mkdir -p "$MIGRATION_DIR"
+  existing="$(find "$MIGRATION_DIR" -maxdepth 1 -type f -name "${version}_*.sql" -print -quit)"
+        from supabase_migrations.schema_migrations
+        from supabase_migrations.schema_migrations
+    echo "BLOCKED: remote migration $version was not found."
+    echo "BLOCKED: remote migration $version has no recoverable statements."
+  target="${MIGRATION_DIR}/${version}_${name}.sql"
+    printf '%s\n' '-- Recovered verbatim from supabase_migrations.schema_migrations'
+echo "Recovered migration inventory:"
+echo "NEXT_GATE=inspect recovered SQL and run migration dry-run"
+printf 'supabase='
+command -v supabase || true
+supabase --version 2>/dev/null || true
+echo "=== 3. MIGRATION STATE ==="
+find supabase/migrations -maxdepth 1 -type f -printf '%f\n' 2>/dev/null   | sort   | tail -50
+for v in 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630; do     n="$(find supabase/migrations -maxdepth 1 -type f -name "${v}_*.sql" | wc -l)";     printf '%s %s\n' "$v" "$([ "$n" -gt 0 ] && echo PRESENT || echo MISSING)"; done
+echo "=== 5. SUPABASE CONFIG ==="
+if [ -d supabase ]; then     find supabase -maxdepth 2 -type f       \( -name 'config.toml' -o -name '*.sql' \)       -printf '%p\n' | sort | head -100; else     echo "supabase directory missing"; fi
+echo "Do not run migrations yet."
+echo "Need: database-client availability + migration inventory + safe DB connection path."
+VERSIONS=( 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630 )
+echo "=== 4. SEARCH GIT HISTORY FOR MIGRATION PATHS ==="
+git log --all --oneline --decorate --   'supabase/migrations/*'   2>/dev/null | head -100 || true
+echo "=== 6. SEARCH RECENT COMMITS FOR SUPABASE/MIGRATION ==="
+git log --all   --date=iso   --pretty=format:'%h %ad %d %s'   --grep='migration\|supabase'   -i   -30 || true
+echo "=== 7. LOCAL SUPABASE / SQL ARTIFACTS ==="
+echo "No migration executed."
+VERSIONS=( 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630 )
+git log   --oneline   --decorate   --date=iso   --format='%h %ad %d %s'   repair/supabase-migration-history-reconciliation   -30
+echo "=== 3. REPAIR BRANCH MIGRATION TREE ==="
+git ls-tree -r --name-only   repair/supabase-migration-history-reconciliation   | grep -E '(^|/)(supabase/migrations|.*migration.*|.*\.sql$)'   | head -300 || true
+for v in "${VERSIONS[@]}"; do     echo "--- $v ---";     git ls-tree -r --name-only       repair/supabase-migration-history-reconciliation       | grep -F "$v" || true; done
+git diff   --stat   main...repair/supabase-migration-history-reconciliation
+git diff   --name-status   main...repair/supabase-migration-history-reconciliation
+echo "No migration execution."
+OUT="$ROOT/runtime/migration-recovery-$STAMP"
+VERSIONS=( 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630 )
+echo "=== TIGHT: RECOVER MIGRATION SQL ==="
+git show-ref --verify refs/heads/repair/supabase-migration-history-reconciliation
+git log --oneline --decorate   repair/supabase-migration-history-reconciliation -20
+        repair/supabase-migration-history-reconciliation |
+    )";      if [ -n "$paths" ]; then         FOUND=1;         while IFS= read -r path; do             [ -z "$path" ] && continue;             echo "FOUND: $path";              mkdir -p "$OUT/$(dirname "$path")";              git show               "repair/supabase-migration-history-reconciliation:$path"               > "$OUT/$path";              sha256sum "$OUT/$path"
+if [ "$COUNT" -eq 13 ]; then     echo "STATUS=REAL";     echo "ALL_13_MIGRATIONS_RECOVERED=YES"; else     echo "STATUS=PARTIAL";     echo "ALL_13_MIGRATIONS_RECOVERED=NO"; fi
+echo "migration_execution=NOT_ATTEMPTED"
+command -v supabase || true
+echo "migration_execution=NOT_ATTEMPTED"
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+echo "=== TIGHT: LIVE SUPABASE MIGRATION LEDGER INSPECTION ==="
+echo "READ-ONLY: no migration will be executed."
+read -rsp "Canonical Supabase DB PASSWORD: " PGPASSWORD
+VERSIONS=( 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630 )
+echo "=== SUPABASE READ-ONLY CONNECTION TEST ==="
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+read -rsp "Canonical Supabase DB PASSWORD: " DB_PASSWORD
+if [ "$RC" -eq 0 ]; then     echo "CONNECTION=SUCCESS";     echo "NEXT=READ_MIGRATION_LEDGER"; else     echo "CONNECTION=FAILED";     echo "NEXT=DO_NOT_RETRY_SAME_ENDPOINT"; fi
+echo "=== TIGHT: LIVE MIGRATION LEDGER ==="
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+read -rsp "Canonical Supabase DB PASSWORD: " DB_PASSWORD
+echo "=== 1. MIGRATION TABLES ==="
+WHERE table_name ILIKE '%migration%'
+echo "=== 2. LIVE SUPABASE MIGRATION LEDGER ==="
+FROM supabase_migrations.schema_migrations
+FROM supabase_migrations.schema_migrations
+  '20260716230809',
+  '20260716230815',
+  '20260716230822',
+  '20260716231037',
+  '20260720155026',
+  '20260720160050',
+  '20260720160228',
+  '20260720160411',
+  '20260720170003',
+  '20260720171442',
+  '20260720171542',
+  '20260720171602',
+  '20260720171630'
+echo "migration_execution=NONE"
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+read -rsp "Canonical Supabase DB PASSWORD: " DB_PASSWORD
+echo "migration_execution=NONE"
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+read -rsp "Canonical Supabase DB PASSWORD (retry): " DB_PASSWORD
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+read -rsp "Canonical Supabase DB PASSWORD (retry): " DB_PASSWORD
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+read -rsp "Canonical Supabase DB PASSWORD (retry): " DB_PASSWORD
+HOST="db.jjsycelagfmuquvxryfo.supabase.co"
+echo "=== DIRECT SUPABASE CONNECTION ==="
+if [ "$RC" -ne 0 ]; then     unset DB_PASSWORD PGPASSWORD;     echo "CONNECTION=BLOCKED";     echo "migration_execution=NONE";     echo "database_write=NONE";     exit 1; fi
+HOST="db.${PROJECT_REF}.supabase.co"
+echo "=== TIGHT: SUPABASE DIRECT IPv4 + PERSISTENT CREDENTIAL ==="
+getent ahostsv4 db.jjsycelagfmuquvxryfo.supabase.co
+echo "migration_execution=NONE"
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+echo "=== TIGHT: LIVE SUPABASE MIGRATION LEDGER ==="
+read -rsp "Canonical Supabase DB PASSWORD: " DB_PASSWORD
+echo "=== 2. MIGRATION TABLE ==="
+WHERE table_schema = '\''supabase_migrations'\''
+FROM supabase_migrations.schema_migrations
+FROM supabase_migrations.schema_migrations
+  '20260716230809',
+  '20260716230815',
+  '20260716230822',
+  '20260716231037',
+  '20260720155026',
+  '20260720160050',
+  '20260720160228',
+  '20260720160411',
+  '20260720170003',
+  '20260720171442',
+  '20260720171542',
+  '20260720171602',
+  '20260720171630'
+echo "migration_execution=NONE"
+echo "migration_execution=NONE"
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+echo "=== TIGHT: LIVE SUPABASE MIGRATION LEDGER ==="
+read -rsp "Canonical Supabase DB PASSWORD: " DB_PASSWORD
+echo "=== 2. MIGRATION TABLE ==="
+WHERE table_schema = '\''supabase_migrations'\''
+FROM supabase_migrations.schema_migrations
+FROM supabase_migrations.schema_migrations
+  '20260716230809',
+  '20260716230815',
+  '20260716230822',
+  '20260716231037',
+  '20260720155026',
+  '20260720160050',
+  '20260720160228',
+  '20260720160411',
+  '20260720170003',
+  '20260720171442',
+  '20260720171542',
+  '20260720171602',
+  '20260720171630'
+echo "migration_execution=NONE"
+OUT="$ROOT/runtime/migration-recovery-$(date -u +%Y%m%dT%H%M%SZ)"
+VERSIONS=( 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630 )
+echo "=== TIGHT: DEEP MIGRATION SOURCE RECOVERY ==="
+OUT="$ROOT/runtime/migration-recovery-$(date -u +%Y%m%dT%H%M%SZ)"
+VERSIONS=( 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630 )
+echo "=== TIGHT: DEEP MIGRATION SOURCE RECOVERY V2 ==="
+for V in "${VERSIONS[@]}"; do     echo;     echo "--- $V ---";      {         echo "### VERSION $V";          git log --all --full-history           --oneline           --grep="$V" 2>/dev/null || true;          git log --all --full-history           --name-only           --pretty=format:           -- 'supabase/migrations/*' 2>/dev/null |           grep -F "$V" || true;      } | tee -a "$OUT/history-hits.txt"; done
+if git rev-parse --verify "$BACKUP_REF" >/dev/null 2>&1; then     echo "backup_ref=FOUND";      BACKUP_OUT="$OUT/backup";     mkdir -p "$BACKUP_OUT";      git archive "$BACKUP_REF"       -- supabase/migrations |       tar -x -C "$BACKUP_OUT";      echo "backup_files:";     find "$BACKUP_OUT" -type f -print | sort; else     echo "backup_ref=NOT_FOUND"; fi
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+read -rsp "Canonical Supabase DB PASSWORD (retry): " DB_PASSWORD
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+echo "=== TIGHT: LIVE MIGRATION LEDGER ==="
+HOST="aws-1-ap-northeast-2.pooler.supabase.com"
+echo "=== 1. SUPABASE MIGRATION TABLE ==="
+WHERE table_name ILIKE '%migration%'
+FROM supabase_migrations.schema_migrations
+  '20260716230809',
+  '20260716230815',
+  '20260716230822',
+  '20260716231037',
+  '20260720155026',
+  '20260720160050',
+  '20260720160228',
+  '20260720160411',
+  '20260720170003',
+  '20260720171442',
+  '20260720171542',
+  '20260720171602',
+  '20260720171630'
+FROM supabase_migrations.schema_migrations
+echo "migration_execution=NONE"
+HOST="db.jjsycelagfmuquvxryfo.supabase.co"
+read -rsp "Canonical Supabase DB PASSWORD: " DB_PASSWORD
+echo "migration_execution=NONE"
+HOST="db.jjsycelagfmuquvxryfo.supabase.co"
+read -rsp "Canonical Supabase DB PASSWORD: " DB_PASSWORD
+OUT="$ROOT/runtime/migration-recovery-$STAMP"
+VERSIONS=( 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630 )
+echo "=== TIGHT: MIGRATION SOURCE RECOVERY V3 ==="
+find "$HOME"   -type f   \( -name "*.sql" -o -name "*.json" -o -name "*.yaml" -o -name "*.yml" -o -name "*.log" -o -name "*.txt" \)   -not -path "$ROOT/runtime/migration-recovery-*/*"   -not -path "$ROOT/runtime/migration-recovery-*/*/*"   -size -100M   -print 2>/dev/null |   tee "$OUT/search-files.txt" >/dev/null
+OUT="$ROOT/runtime/migration-recovery-$STAMP"
+VERSIONS=( 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630 )
+echo "=== TIGHT: DEEP MIGRATION SOURCE RECOVERY V2 ==="
+if git show-ref --verify --quiet "$BACKUP_REF"; then     echo "backup_ref=FOUND";      git ls-tree -r --name-only "$BACKUP_REF" |         tee "$OUT/backup-tree.txt" >/dev/null;      echo;     echo "--- SQL / MIGRATION PATHS ---";     grep -Ei '(^|/)(migration|migrations)(/|$)|\.sql$' "$OUT/backup-tree.txt" |         head -500 || true;      echo;     echo "--- TARGET VERSION PATHS ---";      for V in "${VERSIONS[@]}"; do         MATCH="$(grep -E "(^|/)$V([^0-9]|$)|(^|/)${V}[^/]*\.sql$" "$OUT/backup-tree.txt" || true)";          if [ -n "$MATCH" ]; then             echo "FOUND $V";             echo "$MATCH";         else             echo "MISSING $V";         fi;     done; else     echo "backup_ref=NOT_FOUND"; fi
+echo "migration_execution=NONE"
+OUT="$ROOT/runtime/migration-recovery-$STAMP"
+VERSIONS=( 20260716230809 20260716230815 20260716230822 20260716231037 20260720155026 20260720160050 20260720160228 20260720160411 20260720170003 20260720171442 20260720171542 20260720171602 20260720171630 )
+echo "=== TIGHT: DEEP MIGRATION SOURCE RECOVERY V2 ==="
+if git show-ref --verify --quiet "$BACKUP_REF"; then     echo "backup_ref=FOUND";      git ls-tree -r --name-only "$BACKUP_REF" |         tee "$OUT/backup-tree.txt" >/dev/null;      echo;     echo "--- SQL / MIGRATION PATHS ---";     grep -Ei '(^|/)(migration|migrations)(/|$)|\.sql$' "$OUT/backup-tree.txt" |         head -500 || true;      echo;     echo "--- TARGET VERSION PATHS ---";      for V in "${VERSIONS[@]}"; do         MATCH="$(grep -E "(^|/)$V([^0-9]|$)|(^|/)${V}[^/]*\.sql$" "$OUT/backup-tree.txt" || true)";          if [ -n "$MATCH" ]; then             echo "FOUND $V";             echo "$MATCH";         else             echo "MISSING $V";         fi;     done; else     echo "backup_ref=NOT_FOUND"; fi

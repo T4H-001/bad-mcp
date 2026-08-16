@@ -1,0 +1,12 @@
+refs/heads/main
+refs/heads/master
+refs/heads/repair/supabase-migration-history-reconciliation
+refs/remotes/origin/agent/qwen-governed-integration
+refs/remotes/origin/backup/original-main-20260808
+refs/remotes/origin/feat/completion-benchmark-t4h-cb-001
+refs/remotes/origin/feat/thread-activity-http-v1
+refs/remotes/origin/feat/thread-idle-observer-v1
+refs/remotes/origin/feat/thread-idle-supabase-v1
+refs/remotes/origin/main
+refs/remotes/origin/master
+refs/remotes/origin/t4h/runtime-bootstrap-v1
