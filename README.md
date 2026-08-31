@@ -1,32 +1,39 @@
-# Synal-Core
+# bad-mcp — T4H legacy integration surface
 
-## Qwen Code Integration
+**Governance status: migration / compatibility surface.**
 
-Synal-Core includes the Qwen Code GitHub Action integration for governed
-AI-assisted repository operations.
+`bad-mcp` is not the canonical T4H control plane and must not become a second
+public MCP gateway. New clients and capabilities route through the T4H Bridge
+and the canonical remote MCP service.
 
-### Supported interactions
+## Canonical routing
 
-- `@qwencoder` — invoke Qwen Code from supported GitHub conversations
-- `@qwencoder /review` — request a pull-request review
-- `@qwencoder /triage` — request issue triage
-- Pull-request review workflow
-- Issue triage workflow
+```text
+Client / Agent -> T4H Bridge -> canonical /mcp -> capability
+```
 
-### Configuration
+Runner, LLM, low-risk, mid-risk, and specialist services remain behind the
+Bridge. They must not receive independent public endpoints from this repository.
 
-- `QWEN.md` — Synal-Core agent operating contract
-- `.qwen/settings.json` — Qwen Code settings
-- `.github/workflows/qwen-dispatch.yml` — command dispatcher
-- `.github/workflows/qwen-invoke.yml` — Qwen invocation
-- `.github/workflows/qwen-review.yml` — pull-request review
-- `.github/workflows/qwen-triage.yml` — issue triage
+## Compatibility rules
 
-Authentication is supplied through GitHub encrypted secrets. Credentials,
-API keys and tokens must never be committed to the repository.
+- Preserve existing integrations only while they are being migrated.
+- Do not add another `/mcp`, worker, runner, or LLM public ingress here.
+- Treat `api/mcp_v2.py` as a legacy compatibility endpoint; new consumers must
+  not be pointed at it.
+- Remove legacy endpoint implementations only after dependency inventory and
+  live-client migration are verified.
+- No runtime logs, credentials, tokens, or transient deployment artifacts are
+  committed.
 
-### Governance
+## Qwen integration
 
-Qwen changes are subject to repository governance and evidence requirements.
-Agent output is not treated as verified merely because a workflow completed;
-material changes require validation and observable evidence.
+This repository retains the existing Qwen Code workflow integration. Agent
+output is not proof of successful execution; material changes require validation
+and observable evidence.
+
+## Source of truth
+
+The canonical endpoint and routing rules are governed by the T4H Bridge
+Constitution and endpoint registry in `bridge-constitution-troy`. This repository
+implements compatibility only and must conform to those rules.
